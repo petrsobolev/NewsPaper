@@ -1,37 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using NewsPaper.Models;
+using NewsPaper.Models.NewsModels;
+using NewsPaper.Data;
 
 namespace NewsPaper.Controllers
 {
     public class HomeController : Controller
     {
+        ApplicationDbContext Context { get; set; }
+        public HomeController(ApplicationDbContext Context)
+        {
+            this.Context = Context;
+        }
+
         public IActionResult Index()
         {
+
+            return View(Context.News.Select(news =>news).OrderBy(news=>news.CreationTime).Take(5));
+        }
+        public IActionResult CreateNew(New model)
+        {
+            
             return View();
         }
 
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
 }

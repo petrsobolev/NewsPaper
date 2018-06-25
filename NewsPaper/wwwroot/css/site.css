@@ -20,7 +20,16 @@
 .carousel-inner .item img[src$=".svg"] {
     width: 100%;
 }
-
+.navbar {
+    text-decoration-color:aliceblue !important;
+    background-color:ivory;
+}
+.nav navbar-nav navbar-right {
+    text-decoration-color:black;
+}
+.navbar-header {
+    color:black;
+}
 /* QR code generator */
 #qrCode {
     margin: 15px;
@@ -32,4 +41,14 @@
     .carousel-caption {
         display: none;
     }
+}
+
+.new {
+    margin:20px !important;
+}
+.new-header {
+    margin:10px !important;
+}
+.new-footer {
+    margin:10px !important;
 }

@@ -32,6 +32,22 @@ namespace NewsPaper
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+            services.AddAuthentication().AddTwitter(twitterOptions =>
+            {
+                twitterOptions.ConsumerKey = "XqDKVP56TIxK7N5SwN5jXwHqP";
+                twitterOptions.ConsumerSecret = "ejzbvTHzCckwMU8ZEw9zR5ylU3h1PmwBbgnUZA8VEd7J1wHOmt";
+            })
+            .AddFacebook(facebookOptions =>
+            {
+                facebookOptions.AppId = "240266420061121";
+                facebookOptions.AppSecret = "c0ad0a230f1fc84c0e857430f227356c";
+            });
+            services.AddAuthentication().AddVKontakte(VKOptions =>
+            {
+                VKOptions.ClientId = "6602917";
+                VKOptions.ClientSecret = "Agtld1M81uV3Deb4o8qu";
+
+            });
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();

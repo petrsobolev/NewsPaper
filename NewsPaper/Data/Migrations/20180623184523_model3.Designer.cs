@@ -11,9 +11,10 @@ using System;
 namespace NewsPaper.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180623184523_model3")]
+    partial class model3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,7 +169,7 @@ namespace NewsPaper.Data.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256);
 
-                    b.Property<byte[]>("UserPhoto");
+                    b.Property<string>("UserPhotoUrl");
 
                     b.HasKey("Id");
 
