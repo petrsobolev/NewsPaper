@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ using Microsoft.Extensions.Options;
 using NewsPaper.Models;
 using NewsPaper.Models.AccountViewModels;
 using NewsPaper.Services;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace NewsPaper.Controllers
 {
@@ -220,7 +223,13 @@ namespace NewsPaper.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email,UserPhoto=model.UserPhoto };
+               
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    UserPhoto ="/images/default.png"
+                };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

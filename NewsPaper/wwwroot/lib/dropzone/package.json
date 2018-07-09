@@ -1,0 +1,88 @@
+{
+  "_args": [
+    [
+      "dropzone@5.4.0",
+      "C:\\Users\\Rodion\\Desktop\\itra\\projects\\EssayStorage\\EssayStorage"
+    ]
+  ],
+  "_from": "dropzone@5.4.0",
+  "_id": "dropzone@5.4.0",
+  "_inCache": true,
+  "_location": "/dropzone",
+  "_nodeVersion": "7.6.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/dropzone_5.4.0_1520348914957_0.23249704137423044"
+  },
+  "_npmUser": {
+    "email": "m@tias.me",
+    "name": "enyo"
+  },
+  "_npmVersion": "4.1.2",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "dropzone",
+    "raw": "dropzone@5.4.0",
+    "rawSpec": "5.4.0",
+    "scope": null,
+    "spec": "5.4.0",
+    "type": "version"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "https://registry.npmjs.org/dropzone/-/dropzone-5.4.0.tgz",
+  "_shasum": "3290c07f59b189eb5a11e99a58c9b2adae5acfec",
+  "_shrinkwrap": null,
+  "_spec": "dropzone@5.4.0",
+  "_where": "C:\\Users\\Rodion\\Desktop\\itra\\projects\\EssayStorage\\EssayStorage",
+  "bugs": {
+    "email": "m@tias.me",
+    "url": "https://gitlab.com/meno/dropzone/issues"
+  },
+  "contributors": [
+    {
+      "name": "Matias Meno",
+      "email": "m@tias.me",
+      "url": "http://www.colorglare.com"
+    }
+  ],
+  "dependencies": {},
+  "description": "Handles drag and drop of files for you.",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "fileCount": 19,
+    "shasum": "3290c07f59b189eb5a11e99a58c9b2adae5acfec",
+    "tarball": "https://registry.npmjs.org/dropzone/-/dropzone-5.4.0.tgz",
+    "unpackedSize": 362847
+  },
+  "gitHead": "caf200c13fd3608dd6bed122926d5848927f55b4",
+  "homepage": "http://www.dropzonejs.com",
+  "installable": true,
+  "keywords": [
+    "drag and drop",
+    "dragndrop",
+    "file upload",
+    "upload"
+  ],
+  "license": "MIT",
+  "main": "./dist/dropzone.js",
+  "maintainers": [
+    {
+      "name": "enyo",
+      "email": "m@tias.me"
+    }
+  ],
+  "name": "dropzone",
+  "optionalDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/meno/dropzone.git"
+  },
+  "scripts": {
+    "test": "grunt && npm run test-prebuilt",
+    "test-prebuilt": "mocha-phantomjs test/test.html"
+  },
+  "version": "5.4.0"
+}

@@ -1,0 +1,83 @@
+﻿@model NewsPaper.Models.NewsModels.New
+@inject UserManager<ApplicationUser> UserManager
+
+<link rel="stylesheet" href="~/lib/rating/dist/starrr.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/lib/Comments/css/jquery-comments.css" />
+
+<header class="content-one-new-header">
+    <div class="user-information" id="@UserManager.GetUserId(User)">
+        Автор:<img class="img-circle" style="width:30px; margin-top:5px"
+                   src="@UserManager.FindByIdAsync(Model.UserId).Result.UserPhoto" /> |
+
+        <span>@UserManager.FindByIdAsync(Model.UserId).Result.UserName</span>
+    </div>
+
+    <div class="new-rating">
+        <div class='starrr' id='star1'></div>
+
+    </div>
+    <br />
+    <br />
+
+</header>
+<hr />
+<article class="content-one-new">
+    <div class="center-block">
+        <h3>@Model.Name</h3>
+    </div>
+    <div class="content" id="@Model.Id">
+        @Model.Content
+    </div>
+    <hr />
+</article>
+<footer class="footer-one-new">
+    <div id="comments-container"></div>
+</footer>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/rating/dist/starrr.js"></script>
+<script src="~/js/OpenNew.js"></script>
+<script src="~/lib/Comments/js/jquery-comments.min.js"></script>
+
+<script>
+       
+
+var eventUserId = $(".user-information").attr("id");
+$('#star1').starrr({
+    change: function (e, value) {
+        if (value) {
+            $.post("../SetRating",
+                {
+                    newId: $(".content").attr("id"),
+                    rating: value
+                });
+        }
+
+
+    }
+    });
+    $('#comments-container').comments({
+        profilePictureURL: '@UserManager.GetUserAsync(User).Result.UserPhoto',
+        enablePinging: false,
+        enableAttachments: false,
+        enableDeletingCommentWithReplies: false,
+        enableDeleting: false,
+        enableEditing: false,
+        enableReplying:false,
+        fieldMappings: {
+            id: 'Id',
+            created: 'CreationTime',
+            content: 'Text',
+            fullname: 'UserName',
+            profilePictureURL: 'UserPicturePath',
+            createdByAdmin: 'CreatedByAdmin',
+            upvoteCount: 'LikesCount',
+            userHasUpvoted: 'UserHasUpVoted'
+        },
+        getComments: function (success, error) {
+            var commentsArray;
+                              
+            success(commentsArray);
+        }
+    });
+</script>

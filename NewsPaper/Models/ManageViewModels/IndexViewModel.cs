@@ -20,6 +20,8 @@ namespace NewsPaper.Models.ManageViewModels
         [Display(Name = "Phone number")]
         public string PhoneNumber { get; set; }
 
+
+
         public string StatusMessage { get; set; }
     }
 }

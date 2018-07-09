@@ -168,7 +168,7 @@ namespace NewsPaper.Data.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256);
 
-                    b.Property<byte[]>("UserPhoto");
+                    b.Property<string>("UserPhoto");
 
                     b.HasKey("Id");
 

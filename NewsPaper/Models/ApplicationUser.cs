@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using NewsPaper.Models.NewsModels;
@@ -18,11 +19,12 @@ namespace NewsPaper.Models
             UserNewRatings = new List<UserNewRating>();
         }
         [Display(Name="UserPhoto")]
-        public byte[] UserPhoto { get; set; }
+        public string UserPhoto { get; set; }
         public bool IsBlocked { get; set; }
 
         public virtual ICollection<New> News { get; set; }
         public virtual ICollection<UserComment> LikedComments { get; set; }
         public virtual ICollection<UserNewRating> UserNewRatings { get; set; }
+       
     }
 }

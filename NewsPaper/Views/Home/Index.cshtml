@@ -1,53 +1,52 @@
-﻿@model IEnumerable<NewsPaper.Models.NewsModels.New>
-
-
+﻿@using NewsPaper.Data
 @{
     ViewData["Title"] = "Index";
 }
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext db
 <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-<h2>News</h2>
-<div id="AddNewContaner" class="col-md-10">
 
+<div class="left">
+    <h2>News</h2>
 </div>
 
-@foreach (var oneNew in Model)
-{
-    <article class="new row" id="@oneNew.Id">
-        <div class="col-lg-2 col-md-2">
-            <div class="new-rating">
-                <div class="all-vortex col-md-2">
-                    <span class="glyphicon glyphicon-bullhorn"></span>@oneNew.VotersCount
-                </div>
-                <div class="averege-rating col-md-2">
-                    <span class="glyphicon glyphicon-star"></span>@oneNew.AverageRating
-                </div>
-            </div>
+<h3>@ViewBag.Specialization</h3>
+
+
+<main class="container row">
+    @foreach (var oneNew in Model)
+    {
+    <div id="templatemo_content_wrapper">
+
+        <div class="post_section">
+            <span class="bottom"></span>
+
+            <span class="comment"><a href="blog_post.html">65</a></span>
+
+            <h2>
+                <a asp-controller="News" asp-action="OpenNew"
+                   asp-route-id="@oneNew.Id">@oneNew.Name</a>
+            </h2>
+
+            <strong>Date:</strong> @oneNew.CreationTime | <strong>Author:</strong> @UserManager.FindByIdAsync(oneNew.UserId).Result.UserName
+            <div>@oneNew.Description</div>
+            <div class="cleaner"></div>
+            <div class="category">Tags: </div>
+            <strong>Оценено:</strong>@oneNew.VotersCount | <strong>Средняя:</strong>@Math.Round(oneNew.AverageRating,1)
+
+            <div class="cleaner"></div>
+
         </div>
-        <div class="new-main col-lg-10 ">
-            <header class="new-header col-lg-10">
-                <h2 class="new-title">@oneNew.Description</h2>
-            </header>
-            <div class="new-content col-lg-10">
-                <div class="inner-block">
-                    <div class="new-text">@oneNew.Content</div>
-                </div>
-            </div>
-            <div class="new-tags col-lg-10">
 
-            </div>
-            <div class="new-footer col-lg-10">
-                <div class="new-tols col-mg-3">
-                    <span class="glyphicon glyphicon-comment"></span>
-                </div>
-                <div class="col-lg-4 col-lg-offset-5"></div>
-                <div class="col-lg-3 user-info">
-                    @*<div class="col-lg-2">@oneNew.User.UserName</div>*@
-                    <div class="col-lg-2">@oneNew.CreationTime</div>
-                </div>
-            </div>
-        </div>
-    </article>
 
-}
+        <div class="cleaner_h40"><!-- a spacing between 2 posts --></div>
+    </div>
 
+    }
+
+
+
+</main>
+<script src="~/lib/Time/time.js"></script>

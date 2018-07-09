@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using NewsPaper.Models.ClientDataModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,8 +10,9 @@ namespace NewsPaper.Models.NewsModels
     public class Comment
     {
 
-        public Comment()
+        public Comment(UserManager<ApplicationUser> userManager)
         {
+            this.userManager = userManager;
             UsersWhoLiked = new List<UserComment>();
         }
 
@@ -28,5 +31,18 @@ namespace NewsPaper.Models.NewsModels
 
         public int NewId { get; set; }
         public New New { get; set; }
+        public static implicit operator ClientComment(Comment param)
+        {
+            return new ClientComment()
+            {
+                Id = param.Id,
+                CreationDate = param.CreationDate,
+                Text = param.Text,
+                UserName = param.UserName,
+                UserPicturePath = param.UserPicturePath,
+                LikesCount = param.UsersWhoLiked.Count(),
+                UserHasUpVoted=false
+            };
+        }
     }
 }
