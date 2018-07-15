@@ -1,59 +1,115 @@
 ﻿@model NewsPaper.Models.NewsModels.New
-{}
-  
-  <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="~/js/editor.md/css/editormd.min.css" />
-    <h4>New</h4>
-    <hr />
-    <div class="createNewWrapper">
-        <div class="col-md-12">
-            <form asp-action="GetFormCreateNew">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="Name" class="control-label"></label>
-                    <input asp-for="Name" class="form-control" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Description" class="control-label"></label>
-                    <input asp-for="Description" class="form-control" />
-                    <span asp-validation-for="Description" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Specialization" class="control-label"></label>
-                    <input asp-for="Specialization" class="form-control" />
-                    <span asp-validation-for="Specialization" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Content" class="control-label"></label>
-                    <div id="test-editormd">
-                        <textarea asp-for="Content" style="display:none;">
-                     </textarea>
-                    </div>
 
-                    <span asp-validation-for="Content" class="text-danger"></span>
 
-                </div>
-                @if (User.IsInRole("ADMIN"))
+<link rel="stylesheet" href="~/css/site.css" />
+<link rel="stylesheet" href="~/js/editor.md/css/editormd.min.css" />
+<link rel="stylesheet" href="~/lib/jquery-flexdatalist/jquery.flexdatalist.min.css" type="text/css">
+
+<h4>New</h4>
+<hr />
+<div class="createNewWrapper">
+    <div class="col-md-12">
+    
+        <form asp-controller="News" asp-action="CreateNew">
+    
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @if (Model.Id==0)
                 {
-                    <div class="form-group">
-                        <label asp-for="UserId" class="control-label"></label>
-                        <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
-                    </div>
+                    <input asp-for="Id" value="@Model.Id" style="display:none"/>
                 }
-                <div class="form-group">
-                    <input type="submit" value="Create" class="btn btn-default" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input type="text" asp-for="Name" class="form-control" value="@Model.Name"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input  asp-for="Description" class="form-control" value="@Model.Description" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Specialization" class="control-label"></label>
+                <input asp-for="Specialization" class="form-control" list="browser" value="@Model.Specialization"/>
+                <datalist id="browser">
+                    <option>Asp.Net</option>
+                    <option>Asp.Net Core</option>
+                    <option>Java</option>
+                    <option>Ruby</option>
+                </datalist>
+                <span asp-validation-for="Specialization" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewTags" class="control-label"></label>
+                <input asp-for="NewTags" type="text" placeholder="теги"
+                           class="flexdatalist" data-min-length="1" multiple="multiple" list="tag-list"
+                           />
+                <datalist id="tag-list"></datalist>
+
+                <span asp-validation-for="NewTags" class="text-danger"></span>
+
+            </div>
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <div id="test-editormd">
+                    <textarea asp-for="Content"style="display:none;">@Model.Content
+                     </textarea>
                 </div>
-            </form>
-        </div>
-    </div>
 
-    <div>
-        <a asp-controller="Home" asp-action="Index">Вернуться у списку записей</a>
-    </div>
-    <script src="~/js/editor.md/examples/js/jquery.min.js"></script>
-    <script src="~/js/editor.md/editormd.min.js"></script>
+                <span asp-validation-for="Content" class="text-danger"></span>
 
-    @section Scripts {
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    }
+            </div>
+            @if (User.IsInRole("ADMIN"))
+            {
+                <div class="form-group">
+                    <label asp-for="UserId" class="control-label"></label>
+                    <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+                </div>
+            }
+                <div class="form-group">
+                    @if (Model.Id ==0)
+                    {
+                        <input type="submit" value="Create" class="btn btn-default" />
+                    }
+                    else
+                    {
+                        <input type="submit" value="Edit" class="btn btn-default" />
+
+                    }
+                </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Home" asp-action="Index">Вернуться у списку записей</a>
+</div>
+
+
+<script src="~/js/editor.md/examples/js/jquery.min.js"></script>
+<script src="~/js/editor.md/editormd.min.js"></script>
+<script src="~/lib/jquery-flexdatalist/jquery.flexdatalist.js"></script>
+
+<script>
+
+    var isTagExists = {};
+    $('.flexdatalist').flexdatalist({
+        minLength: 1,
+        removeOnBackspace: false
+    });
+    $('.flexdatalist').flexdatalist('value', $('#tags-for-flexdatalist').html());
+
+    $(document).on('input', 'input[name=flexdatalist-Tags]', function () {
+        $.post('GetAutocomplitedList', { lineBeginning: $(this).val() }, function (data) {
+            for (let i = 0; i < data.length; i++)
+                if (isTagExists[data[i].tagId] == undefined) {
+                    isTagExists[data[i].tagId] = 1;
+                    $('#tag-list').append($('<option>', { value: data[i].tagId, html: data[i].tagId }));
+                }
+        });
+    });
+
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

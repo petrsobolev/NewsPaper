@@ -1,0 +1,91 @@
+﻿@model IEnumerable<ApplicationUser>;
+@using NewsPaper.Data;
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext db
+<link rel="stylesheet" type="text/css" href="~/lib/DataTables/datatables.css" />
+
+<table id="adminTable" class="display" style="width:100%">
+    <thead>
+        <tr>
+            <th>Имя</th>
+            <th>Роль</th>
+            <th>Статус блокировки</th>
+            <th>Email</th>
+            <th>Статус подверждения почты</th>
+        </tr>
+    </thead>
+    
+   
+    @foreach (var user in Model)
+    {
+
+
+    <tr>
+        <td>@user.UserName</td>
+        <td>
+            <div class="dropdown">
+                <a data-userid="@user.Id" class="dropdown-toggle"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@((await UserManager.GetRolesAsync(user)).FirstOrDefault())</a>
+                <div class="dropdown-menu">
+                    <a href="#" id="user" data-id="@user.Id" class="dropdown-item role">Читатель</a>
+                    <a href="#" id="writer" data-id="@user.Id" class="dropdown-item role">Писатель</a>
+                    <a href="#" id="admin" data-id="@user.Id" class="dropdown-item role">Админ</a>
+                </div>
+            </div>
+        </td>
+        @if (user.IsBlocked)
+        {
+            <td><input type="checkbox" class="checkbox checkbox-blockUser" data-userid="@user.Id" checked />заблокирован</td>
+        }
+        else
+        {
+            <td><input type="checkbox" class="checkbox checkbox-blockUser" data-userid="@user.Id" />заблокирован</td>
+        }
+        <td>@user.Email</td>
+        
+        <td>@user.EmailConfirmed</td>
+    </tr>
+    }
+</table>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/DataTables/datatables.js"></script>
+<script>
+    $(".checkbox-blockUser").change(function () { 
+        var userId = $(this).attr("data-userid");
+        var IsBlock = this.checked;
+        $.post({
+            url: "Admin/BlockUser",
+            data: {
+                userId: userId,
+            },
+            success: function () { console.log("vse pizdato")}
+            
+        });
+        
+    });
+    
+</script>
+<script>
+    $(".role").click(function (event) {
+        var selectedRole = $(this).attr("id");
+        var userId = $(this).attr("data-id");
+
+        $.post({
+            url: "Admin/ResetRoleUser",
+            data: {
+                selectRole: selectedRole,
+                userId:userId
+            },
+            success: function () {
+                $("[data-userid=" + userId + "]").html(selectedRole);
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $.noConflict();
+        $('#adminTable').DataTable();
+    });
+</script>

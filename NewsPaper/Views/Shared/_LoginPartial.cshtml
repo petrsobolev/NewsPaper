@@ -8,8 +8,14 @@
 {
     <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="navbar-right">
         <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown open">
-                <a class="dropdown-toggle" asp-controller="News" asp-action="GetFormCreateNew">+add New</a>
+        @if (UserManager.IsInRoleAsync(UserManager.GetUserAsync(User).Result,"ADMIN").Result)
+        {
+            <li>
+                <a asp-controller="Admin" asp-action="Index">Adminka</a>
+            </li>
+        }
+            <li>
+                <a  asp-controller="News" asp-action="GetFormCreateNew">+add New</a>
                 
             </li>
             <li>

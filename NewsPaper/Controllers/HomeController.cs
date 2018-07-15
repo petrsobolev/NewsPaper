@@ -23,22 +23,31 @@ namespace NewsPaper.Controllers
         
         public IActionResult Index(string SpecializationArg)
         {
-            IQueryable<New> model;
+            
+                IQueryable<New> model;
             if (string.IsNullOrEmpty(SpecializationArg))
+            {
                 model = Context.News.Select(n => n).OrderBy(n => n.CreationTime).Take(5);
+                ViewBag.Specialization = "Последние";
+
+            }
             else
+            {
                 model = Context.News.Select(n => n)
                     .Where(n => n.Specialization == SpecializationArg)
-                    .OrderBy(n=>n.CreationTime)
+                    .OrderByDescending(n => n.CreationTime)
                     .Take(5);
-            ViewBag.Specialization = model.First().Specialization;
+                ViewBag.Specialization = model.First().Specialization;
+            }
 
-            Dictionary<string, string> UserPhotos = new Dictionary<string, string>();
-            foreach (var user in userManager.Users)
-                UserPhotos.Add(user.Id, user.UserPhoto);
-            ViewBag.UserPhotos = UserPhotos;
+                Dictionary<string, string> UserPhotos = new Dictionary<string, string>();
+                foreach (var user in userManager.Users)
+                    UserPhotos.Add(user.Id, user.UserPhoto);
+                ViewBag.UserPhotos = UserPhotos;
 
-            return View(model);
+                return View(model);
+            
+            
         }
         
         public IActionResult CreateNew(New model)

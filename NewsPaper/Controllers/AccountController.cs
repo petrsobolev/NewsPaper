@@ -14,9 +14,8 @@ using Microsoft.Extensions.Options;
 using NewsPaper.Models;
 using NewsPaper.Models.AccountViewModels;
 using NewsPaper.Services;
-using System.IO;
 using Microsoft.AspNetCore.Http;
-
+using NewsPaper.Data;
 namespace NewsPaper.Controllers
 {
     [Authorize]
@@ -25,6 +24,7 @@ namespace NewsPaper.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private ApplicationDbContext Context;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
@@ -32,12 +32,14 @@ namespace NewsPaper.Controllers
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            ApplicationDbContext Context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
+            this.Context = Context;
         }
 
         [TempData]
@@ -64,7 +66,11 @@ namespace NewsPaper.Controllers
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                Microsoft.AspNetCore.Identity.SignInResult result;
+                if (!Context.Users.FirstOrDefault(user => user.Email == model.Email).IsBlocked)
+                    result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                else
+                    return RedirectToAction(nameof(Lockout));
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
@@ -233,6 +239,7 @@ namespace NewsPaper.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(user, "user");
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -268,6 +275,8 @@ namespace NewsPaper.Controllers
             var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
+
+
         }
 
         [HttpGet]

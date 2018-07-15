@@ -1,9 +1,11 @@
 ﻿@model NewsPaper.Models.NewsModels.New
 @inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
 
 <link rel="stylesheet" href="~/lib/rating/dist/starrr.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="~/lib/Comments/css/jquery-comments.css" />
+<link rel="stylesheet" href="~/css/comments.css" />
 
 <header class="content-one-new-header">
     <div class="user-information" id="@UserManager.GetUserId(User)">
@@ -14,7 +16,14 @@
     </div>
 
     <div class="new-rating">
-        <div class='starrr' id='star1'></div>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <div class="">
+               Вы поставили|@ViewBag.userRating;
+            </div>
+        }
+
+        Изменить оценку|<div class='starrr' id='star1'></div>
 
     </div>
     <br />
@@ -26,58 +35,217 @@
     <div class="center-block">
         <h3>@Model.Name</h3>
     </div>
-    <div class="content" id="@Model.Id">
+    <div class="content">
         @Model.Content
     </div>
+    <input id="new-id" value="@Model.Id" style="display:none;" />
+
     <hr />
 </article>
 <footer class="footer-one-new">
-    <div id="comments-container"></div>
+
+    <div class="coments-container"></div>
 </footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-shim.min.js"></script>
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script src="~/lib/rating/dist/starrr.js"></script>
 <script src="~/js/OpenNew.js"></script>
 <script src="~/lib/Comments/js/jquery-comments.min.js"></script>
 
+
+<section class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div style="color: #ee8b2d; font-size: 20px; padding: 20px; display: inline-block; float: left;">
+                <label style="display: block; color: darkgray;">Средний рейтинг</label>
+                <input type="hidden" id="avgrating" class="rating" data-readonly />
+                <br />
+            </div>
+            
+            <div class="panel">
+                <div class="panel-body">
+                    <textarea style="resize: none;" id="comment-text" class="form-control" rows="2" placeholder="Добавьте Ваш комментарий"></textarea>
+                    <div style="height: 38px; float: left;">
+                        <div id="reply-name" class="label label-info" style="display: none; margin-top: 5px; float: left; padding-top: 4px;">
+
+                        </div>
+                    </div>
+                    <div class="mar-top clearfix">
+                        <button id="comment-sender" style="margin-top: -10px;" value="" class="btn btn-sm btn-primary pull-right" type="submit"><i class="fa fa-pencil fa-fw"></i> Добавить</button>
+                    </div>
+                </div>
+            </div>
+            <div style="padding-bottom: 10px;" class="panel">
+                <span id="comments-waiter" class="cssload-loader"><span class="cssload-loader-inner"></span></span>
+                <div style="display: none;" id="all-comments" class="panel-body">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
 <script>
-       
-
-var eventUserId = $(".user-information").attr("id");
-$('#star1').starrr({
-    change: function (e, value) {
-        if (value) {
-            $.post("../SetRating",
-                {
-                    newId: $(".content").attr("id"),
-                    rating: value
-                });
+    var lastCommentId = -1;
+    $.post(
+        "../../Comments/GetComments",
+        { essayId: $('#new-id').val() },
+        function (data) {
+            buildComments(data);
+            $('#all-comments').attr("style", "display: block;");
+            $('#comments-waiter').attr("style", "display: none;");
+            poll();
         }
+    );
+    var used = new Object;
+    var root = [];
+    function buildComments(data) {
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].id > lastCommentId)
+                lastCommentId = data[i].id;
+            data[i].depth = 1;
+            root[root.length] = data[i];
+            used[data[i].id] = data[i];
 
-
+        }
     }
+    function poll() {
+        $.ajax({
+            url: "../../Comments/UpdateComments",
+            data: { newId: $('#new-id').val(), lastCommentId: lastCommentId },
+            success: function (data) {
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].id > lastCommentId)
+                        lastCommentId = data[i].id;
+                    used[data[i].id] = data[i];
+                    let placeToAdd;
+                    placeToAdd = $('#all-comments');
+                    data[i].depth = 1;
+
+                    let el = createComment(data[i], []);
+                    placeToAdd.prepend(el);
+                }
+            }, complete: poll, timeout: 60000
+        });
+    }
+    function createComment(parent, childs) {
+        var comment = $('<div>', {
+            class: "media-block",
+            append: $('<a>', {
+                class: "media-left",
+                //href: "#",
+                append: $('<img>', {
+                    class: "img-sm",
+                    src: parent.userPicturePath
+                })
+            })
+        });
+
+        var mediabody = $('<div>', {
+            class: "media-body"
+        });
+
+        mediabody.append(
+            $('<div>', {
+                class: "mar-btm",
+                append: $('<p>', {
+                    class: "text-muted text-sm",
+                    append: $('<i class="fa fa-calendar fa-lg"></i>')
+                }).append(" " + parent.creationDate.split('.')[0].replace("T", " "))
+            }).append($('<a>', {
+                //href: "#",
+                class: "btn-link text-semibold media-heading box-inline",
+                style: "font-size: 17px;",
+                html: parent.userName
+            })));
+
+        mediabody.append(
+            $('<p>', { html: parent.text })
+        );
+
+        let replybutton;
+        if (parent.depth < 3)
+            replybutton = $('<a>', {
+                id: parent.id,
+                class: "btn btn-sm btn-default btn-hover-primary reply-button",
+                style: "height: 30px; display:none",
+                //href: "#",
+
+            });
+        else
+            replybutton = null;
+
+        mediabody.append(
+            $('<div>', {
+                class: "pad-ver"
+            }).append(replybutton)
+                .append($('<hr>')).prepend($('<span>', {
+                    style: "margin-right: 7px; display: inline-block; cursor: pointer; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;",
+                    id: parent.id,
+                    class: "tag tag-sm like-action",
+                    append: $('<i>', {
+                        class: "fa fa-heart text-danger"
+                    })
+                }).append(" ").append($('<span>', { html: parent.likesCount }))
+                )
+        );
+
+
+        comment.append(mediabody);
+        return comment;
+    }
+</script>
+<
+<script>
+    $(document).on("click", ".like-action", function () {
+        let span = $(this);
+        let id = span.attr('id');
+        $.post(
+            '../../Comments/PressLike', { id: id },
+            function (isSuccess) {
+                let likeCounter = span.find("span");
+                if (isSuccess == true)
+                    likeCounter.html(likeCounter.html() * 1 + 1);
+                else if (isSuccess == false)
+                    likeCounter.html(likeCounter.html() * 1 - 1);
+            }
+        );
     });
-    $('#comments-container').comments({
-        profilePictureURL: '@UserManager.GetUserAsync(User).Result.UserPhoto',
-        enablePinging: false,
-        enableAttachments: false,
-        enableDeletingCommentWithReplies: false,
-        enableDeleting: false,
-        enableEditing: false,
-        enableReplying:false,
-        fieldMappings: {
-            id: 'Id',
-            created: 'CreationTime',
-            content: 'Text',
-            fullname: 'UserName',
-            profilePictureURL: 'UserPicturePath',
-            createdByAdmin: 'CreatedByAdmin',
-            upvoteCount: 'LikesCount',
-            userHasUpvoted: 'UserHasUpVoted'
-        },
-        getComments: function (success, error) {
-            var commentsArray;
-                              
-            success(commentsArray);
+
+    $(document).on("click", "#clear-reply", function () {
+        $('#comment-sender').val("");
+        $('#reply-name').hide();
+    });
+
+   
+
+    $('#comment-sender').on("click", function () {
+        var text = $('#comment-text').val();
+        var id = $('#comment-sender').val();
+        $('#comment-text').val('');
+        $.post(
+            '../../Comments/SaveComment',
+            {
+                newId: $('#new-id').val(),
+                text: text
+            }
+        );
+    });
+
+</script>
+
+<script>
+    var eventUserId = $(".user-information").attr("id");
+    $('#star1').starrr({
+        change: function (e, value) {
+            if (value) {
+                $.post("../SetRating",
+                    {
+                        newId: $(".content").attr("id"),
+                        rating: value
+                    });
+            }
         }
     });
+
 </script>

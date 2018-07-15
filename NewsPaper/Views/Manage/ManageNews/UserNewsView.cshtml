@@ -1,0 +1,50 @@
+﻿@model IEnumerable<NewsPaper.Models.NewsModels.New>
+<link href="~/css/site.css" />
+    @if (Model.Count()==0)
+    {
+        <h3>У вас пока нету новостей, вы можете исправить это нажав на +addNew</h3>
+    }
+    else
+    {
+       <style>
+           .info-new {
+               position: absolute;
+               display: inline;
+               left: 20px
+           }
+       </style>
+
+    @foreach (var oneNew in Model)
+    {
+        <div class="span8" data-newId="@oneNew.Id">
+            <h3>@oneNew.Name</h3>
+            <div style="position:absolute;left:80px">
+                <strong>Описание:</strong>@oneNew.Description
+                <br />
+                <span><strong>Дата</strong>@oneNew.CreationTime</span>
+                <span><strong>Средняя оценка:</strong> @oneNew.AverageRating</span>
+                <span><strong>Количество оценок:</strong> @oneNew.VotersCount</span>
+            </div>
+            
+               
+               
+                <div class="pull-right">
+                    <a class="delit" data-newId="@oneNew.Id">Удалить</a>
+                    <a class="edit" asp-controller="News" 
+                        asp-action="GetFormEditNew" asp-route-EditNewId="@oneNew.Id">Изменить</a>
+                </div>
+            <br />
+            <hr>
+            <br/>
+            <script src="~/lib/jquery/dist/jquery.js"></script>
+            <script>
+                $(".delit").click(function () {
+                    var NewId = $(this).attr("data-newId");
+                    $.post("DeleteNew", NewId, function () { 
+                        $("div[data-newId=" + NewId + "]").css({ "display": "none" });
+                    })
+                });
+            </script>
+            </div>
+     }
+   }

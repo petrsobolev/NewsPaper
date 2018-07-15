@@ -10,9 +10,8 @@ namespace NewsPaper.Models.NewsModels
     public class Comment
     {
 
-        public Comment(UserManager<ApplicationUser> userManager)
+        public Comment()
         {
-            this.userManager = userManager;
             UsersWhoLiked = new List<UserComment>();
         }
 
@@ -31,7 +30,7 @@ namespace NewsPaper.Models.NewsModels
 
         public int NewId { get; set; }
         public New New { get; set; }
-        public static implicit operator ClientComment(Comment param)
+        public static explicit operator ClientComment(Comment param)
         {
             return new ClientComment()
             {
@@ -41,7 +40,6 @@ namespace NewsPaper.Models.NewsModels
                 UserName = param.UserName,
                 UserPicturePath = param.UserPicturePath,
                 LikesCount = param.UsersWhoLiked.Count(),
-                UserHasUpVoted=false
             };
         }
     }
