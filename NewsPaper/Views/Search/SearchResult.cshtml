@@ -1,0 +1,33 @@
+﻿@using NewsPaper.Models.NewsModels
+@{
+    ViewData["Title"] = "Результат поиска";
+}
+
+<center><h3>@ViewData["Title"]</h3></center>
+<div class="row">
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Описание</th>
+                    <th>Специализация</th>
+                    <th>Рейтинг</th>
+                    <th>Время создания</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var oneNew in (List<New>)ViewData["news"])
+                {
+                    <tr>
+                        <td style="vertical-align: middle;">@Html.ActionLink(oneNew.Name, "OpenNew", "News", new { id = oneNew.Id })</td>
+                        <td style="vertical-align: middle;">@oneNew.Description</td>
+                        <td style="vertical-align: middle;">@oneNew.Specialization</td>
+                        <td style="vertical-align: middle;">@oneNew.AverageRating</td>
+                        <td style="vertical-align: middle;">@oneNew.CreationTime</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

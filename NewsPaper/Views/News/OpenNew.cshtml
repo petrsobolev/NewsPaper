@@ -6,6 +6,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="~/lib/Comments/css/jquery-comments.css" />
 <link rel="stylesheet" href="~/css/comments.css" />
+<link rel="stylesheet" href="~/css/site.css" />
+<link rel="stylesheet" href="~/js/editor.md/css/editormd.min.css" />
 
 <header class="content-one-new-header">
     <div class="user-information" id="@UserManager.GetUserId(User)">
@@ -15,17 +17,18 @@
         <span>@UserManager.FindByIdAsync(Model.UserId).Result.UserName</span>
     </div>
 
-    <div class="new-rating">
-        @if (SignInManager.IsSignedIn(User))
-        {
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div class="new-rating">
             <div class="">
-               Вы поставили|@ViewBag.userRating;
+                Вы поставили|<span id="userRating"> @ViewBag.userRating</span>
             </div>
-        }
 
-        Изменить оценку|<div class='starrr' id='star1'></div>
 
-    </div>
+            Изменить оценку|<div class='starrr' id='star1'></div>
+        </div>
+    }
     <br />
     <br />
 
@@ -35,8 +38,8 @@
     <div class="center-block">
         <h3>@Model.Name</h3>
     </div>
-    <div class="content">
-        @Model.Content
+    <div id="Newhtml">
+        <textarea>@Model.Content</textarea>
     </div>
     <input id="new-id" value="@Model.Id" style="display:none;" />
 
@@ -46,6 +49,18 @@
 
     <div class="coments-container"></div>
 </footer>
+
+<script src="~/js/editor.md/examples/js/jquery.min.js"></script>
+<script src="~/js/editor.md/editormd.min.js"></script>
+<script src="~/js/editor.md/editormd.js"></script>
+<script src="~/js/editor.md/lib/marked.min.js"></script>
+<script src="~/js/editor.md/lib/prettify.min.js"></script>
+<script src="~/js/editor.md/lib/raphael.min.js"></script>
+<script src="~/js/editor.md/lib/underscore.min.js"></script>
+<script src="~/js/editor.md/lib/sequence-diagram.min.js"></script>
+<script src="~/js/editor.md/lib/flowchart.min.js"></script>
+<script src="~/js/editor.md/lib/jquery.flowchart.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-shim.min.js"></script>
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script src="~/lib/rating/dist/starrr.js"></script>
@@ -56,25 +71,30 @@
 <section class="container">
     <div class="row">
         <div class="col-md-12">
-            <div style="color: #ee8b2d; font-size: 20px; padding: 20px; display: inline-block; float: left;">
-                <label style="display: block; color: darkgray;">Средний рейтинг</label>
-                <input type="hidden" id="avgrating" class="rating" data-readonly />
-                <br />
-            </div>
             
-            <div class="panel">
-                <div class="panel-body">
-                    <textarea style="resize: none;" id="comment-text" class="form-control" rows="2" placeholder="Добавьте Ваш комментарий"></textarea>
-                    <div style="height: 38px; float: left;">
-                        <div id="reply-name" class="label label-info" style="display: none; margin-top: 5px; float: left; padding-top: 4px;">
 
+            @if (SignInManager.IsSignedIn(User))
+            {
+
+                <div class="panel">
+                    <div class="panel-body">
+                        <textarea style="resize: none;" id="comment-text" class="form-control" rows="2" placeholder="Добавьте Ваш комментарий"></textarea>
+                        <div style="height: 38px; float: left;">
+                            <div id="reply-name" class="label label-info" style="display: none; margin-top: 5px; float: left; padding-top: 4px;">
+
+                            </div>
+                        </div>
+                        <div class="mar-top clearfix">
+                            <button id="comment-sender" style="margin-top: -10px;" value="" class="btn btn-sm btn-primary pull-right" type="submit"><i class="fa fa-pencil fa-fw"></i> Добавить</button>
                         </div>
                     </div>
-                    <div class="mar-top clearfix">
-                        <button id="comment-sender" style="margin-top: -10px;" value="" class="btn btn-sm btn-primary pull-right" type="submit"><i class="fa fa-pencil fa-fw"></i> Добавить</button>
-                    </div>
                 </div>
-            </div>
+            }
+            else { 
+                <br />
+                <br/>
+
+            }
             <div style="padding-bottom: 10px;" class="panel">
                 <span id="comments-waiter" class="cssload-loader"><span class="cssload-loader-inner"></span></span>
                 <div style="display: none;" id="all-comments" class="panel-body">
@@ -85,6 +105,19 @@
 
     </div>
 </section>
+<script>
+    var edtitormd;
+    editormd = editormd.markdownToHTML("Newhtml", {
+        htmlDecode: "style,script,iframe",
+        tocDropdown: true,
+        emoji: true,
+        taskList: true,
+        tex: true,
+        flowChart: true,
+        sequenceDiagram: true,
+    });
+    $("#Newhtml").css("display", "block");
+</script>
 <script>
     var lastCommentId = -1;
     $.post(
@@ -195,7 +228,7 @@
         return comment;
     }
 </script>
-<
+
 <script>
     $(document).on("click", ".like-action", function () {
         let span = $(this);
@@ -217,7 +250,7 @@
         $('#reply-name').hide();
     });
 
-   
+
 
     $('#comment-sender').on("click", function () {
         var text = $('#comment-text').val();
@@ -243,6 +276,9 @@
                     {
                         newId: $(".content").attr("id"),
                         rating: value
+                        
+                    }, function () { 
+                        $("#userRating").html(value);
                     });
             }
         }

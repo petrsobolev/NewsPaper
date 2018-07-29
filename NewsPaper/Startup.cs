@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using NewsPaper.Data;
 using NewsPaper.Models;
 using NewsPaper.Services;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 namespace NewsPaper
 {
@@ -48,8 +50,8 @@ namespace NewsPaper
                 VKOptions.ClientSecret = "Agtld1M81uV3Deb4o8qu";
 
             });
-
-            // Add application services.
+            services.AddMvc()
+                            .AddViewLocalization();            // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
 
             services.AddMvc();
@@ -68,7 +70,18 @@ namespace NewsPaper
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
+            var supportedCultures = new[]
+            {
+                
+                new CultureInfo("ru"),
+                new CultureInfo("blr")
+            };
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("ru"),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures
+            });
             app.UseStaticFiles();
 
             app.UseAuthentication();

@@ -44,6 +44,14 @@
         <td>@user.Email</td>
         
         <td>@user.EmailConfirmed</td>
+
+       
+          
+        <td>
+            <a asp-controller="News" asp-action="GetUserNews" asp-route-userId="@user.Id">Список новостей</a>
+        </td>
+            
+        
     </tr>
     }
 </table>

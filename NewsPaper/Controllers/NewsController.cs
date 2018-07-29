@@ -7,15 +7,18 @@ using Microsoft.AspNetCore.Mvc;
 using NewsPaper.Data;
 using NewsPaper.Models;
 using NewsPaper.Models.NewsModels;
-using Westwind.AspNetCore.Markdown;
-
+//using Westwind.AspNetCore.Markdown;
+using Markdig;
 namespace NewsPaper.Controllers
 {
+
     public class NewsController : Controller
     {
         ApplicationDbContext Context { get; set; }
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
+        readonly MarkdownPipeline pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+
         public NewsController(ApplicationDbContext Context,UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager)
         {
@@ -37,6 +40,7 @@ namespace NewsPaper.Controllers
         [HttpGet]
         public IActionResult GetNewsForTag(string tag)
         {
+            
             return View("../Home/Index",Context.News.Where(oneNew=>oneNew.NewTags.Any(oneTag=>oneTag.TagId==tag)));
         }
         

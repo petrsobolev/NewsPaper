@@ -8,6 +8,8 @@
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -43,15 +45,33 @@
                     </li>
                     <li class="active">
                         <a asp-area="" asp-controller="Home" asp-action="Index" asp-route-SpecializationArg="Ruby" class="navbar nav">Ruby</a>
-                    </li>
-                   
-                </ul>
-               
-            </div>
-                @await Html.PartialAsync("_LoginPartial")
-            </div>
+                   </li>
+                   </ul>
+
+</div>
+            @await Html.PartialAsync("_LoginPartial")
+        </div>
     </nav>
     <div class="container body-content">
+        <div class="container">
+            <div class="row">
+                <div id="custom-search-input">
+                    <div class="input-group col-md-12">
+                        <form class="form-inline" asp-controller="Search" asp-action="StartSearch">
+                            <div class="form-group row">
+                                <input type="text" name="Data" class="search-query col-md-6 form-control"
+                                    id="search-input" placeholder="Search" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-danger" col-md-6 id="seachButton" type="submit">
+                                        <span class=" glyphicon glyphicon-search"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
         @RenderBody()
         <hr />
         <footer>
@@ -80,6 +100,8 @@
         <script src="~/js/site.min.js" asp-append-version="true"></script>
 
     </environment>
+    
+
 
     @RenderSection("Scripts", required: false)
 </body>

@@ -73,6 +73,11 @@ namespace NewsPaper.Controllers
                     return RedirectToAction(nameof(Lockout));
                 if (result.Succeeded)
                 {
+                    if (!await _userManager.IsEmailConfirmedAsync(await _userManager.FindByNameAsync(model.Email)))
+                    {
+                        ModelState.AddModelError(string.Empty, "Вы не подтвердили свой email");
+                        return View(model);
+                    }
                     _logger.LogInformation("User logged in.");
                     return RedirectToLocal(returnUrl);
                 }
